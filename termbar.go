@@ -84,16 +84,16 @@ func Render(percent float64, text string, options Options) (string, error) {
 		result += fmt.Sprintf(" %.0f%%", percent)
 	}
 	if options.ShowDelimiter {
-		result += options.Delimiter
+		result += styleDelimiter(options.Output, options.Delimiter)
 	}
 	return result, nil
 }
 
 func styleBar(output Output, bar string) string {
 	if output == Tmux {
-		return "#[bg=color238]" + bar + "#[bg=default]#[nobold]"
+		return "[#[bg=color238]" + bar + "#[bg=default]]#[nobold]"
 	}
-	return "\x1b[48;5;238m" + bar + "\x1b[0m"
+	return "[\x1b[48;5;238m" + bar + "\x1b[0m]"
 }
 
 func styleText(output Output, text string) string {
@@ -101,4 +101,11 @@ func styleText(output Output, text string) string {
 		return "#[bg=lightgrey,fg=color237]" + text + "#[bg=color238,fg=lightgrey]"
 	}
 	return "\x1b[48;5;250m\x1b[38;5;237m" + text + "\x1b[48;5;238m\x1b[38;5;250m"
+}
+
+func styleDelimiter(output Output, delimiter string) string {
+	if output == Tmux {
+		return "#[nobold,fg=colour242]" + delimiter
+	}
+	return "\x1b[38;5;242m" + delimiter + "\x1b[0m"
 }

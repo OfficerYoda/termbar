@@ -10,7 +10,7 @@ func TestRenderTerminal(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got != "\x1b[48;5;238m████▌12:30\x1b[0m" {
+	if got != "[\x1b[48;5;238m████▌12:30\x1b[0m]" {
 		t.Fatalf("Render() = %q", got)
 	}
 }
@@ -20,9 +20,19 @@ func TestRenderTmuxWithExtras(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := "#[bg=color238]█████#[bg=lightgrey,fg=color237]12:30#[bg=color238,fg=lightgrey]#[bg=default]#[nobold] 100% |"
+	want := "[#[bg=color238]█████#[bg=lightgrey,fg=color237]12:30#[bg=color238,fg=lightgrey]#[bg=default]]#[nobold] 100%#[nobold,fg=colour242] |"
 	if got != want {
 		t.Fatalf("Render() = %q, want %q", got, want)
+	}
+}
+
+func TestRenderTerminalDelimiterIsGray(t *testing.T) {
+	got, err := Render(0, "", Options{Size: 1, ShowDelimiter: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasSuffix(got, "\x1b[38;5;242m |\x1b[0m") {
+		t.Fatalf("Render() = %q", got)
 	}
 }
 
