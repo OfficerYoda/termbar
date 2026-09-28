@@ -28,6 +28,7 @@ type Options struct {
 	Output        Output
 	ShowPercent   bool
 	ShowDelimiter bool
+	BoldDelimiter bool
 	Delimiter     string
 }
 
@@ -84,7 +85,7 @@ func Render(percent float64, text string, options Options) (string, error) {
 		result += fmt.Sprintf(" %.0f%%", percent)
 	}
 	if options.ShowDelimiter {
-		result += styleDelimiter(options.Output, options.Delimiter)
+		result += styleDelimiter(options.Output, options.Delimiter, options.BoldDelimiter)
 	}
 	return result + resetStyle(options.Output), nil
 }
@@ -103,9 +104,15 @@ func styleText(output Output, text string) string {
 	return "\x1b[48;5;250m\x1b[38;5;237m" + text + "\x1b[48;5;238m\x1b[38;5;250m"
 }
 
-func styleDelimiter(output Output, delimiter string) string {
+func styleDelimiter(output Output, delimiter string, bold bool) string {
 	if output == Tmux {
+		if !bold {
+			return "#[nobold,fg=colour242]" + delimiter
+		}
 		return "#[bold,fg=colour242]" + delimiter
+	}
+	if !bold {
+		return "\x1b[22;38;5;242m" + delimiter
 	}
 	return "\x1b[38;5;242m" + delimiter
 }
