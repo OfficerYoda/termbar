@@ -20,7 +20,7 @@ Example output (colors omitted):
 For tmux, set `Output: termbar.Tmux`; the same bar is emitted with tmux style sequences:
 
 ```text
-[#[bg=color238]████▎12:30#[bg=default]]#[nobold] 43%#[nobold,fg=colour242] |
+#[bold][#[bg=color238]████▎12:30#[bg=default,fg=default]] 43%#[bold,fg=colour242] |#[default]
 ```
 
 `Render` returns an error when the percentage is outside `0..100`, the output format is unknown, or the text is wider than the bar. Text width is counted in Unicode runes; wide characters such as emoji may occupy more terminal columns.
