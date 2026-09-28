@@ -10,13 +10,13 @@ func TestRenderTerminal(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got != "\x1b[1m[\x1b[48;5;238m████▌12:30\x1b[49;39m]\x1b[0m" {
+	if got != "\x1b[1m[\x1b[48;5;238m████▌12:30\x1b[49;39m]\x1b[22;38;5;242m |\x1b[0m" {
 		t.Fatalf("Render() = %q", got)
 	}
 }
 
 func TestRenderTmuxWithExtras(t *testing.T) {
-	got, err := Render(100, "12:30", Options{Size: 10, Output: Tmux, ShowPercent: true, ShowDelimiter: true, BoldDelimiter: true})
+	got, err := Render(100, "12:30", Options{Size: 10, Output: Tmux, ShowPercent: true, BoldDelimiter: true})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func TestRenderTmuxWithExtras(t *testing.T) {
 }
 
 func TestRenderTerminalDelimiterIsGray(t *testing.T) {
-	got, err := Render(0, "", Options{Size: 1, ShowDelimiter: true, BoldDelimiter: true})
+	got, err := Render(0, "", Options{Size: 1, BoldDelimiter: true})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,11 +37,21 @@ func TestRenderTerminalDelimiterIsGray(t *testing.T) {
 }
 
 func TestRenderCanDisableDelimiterBold(t *testing.T) {
-	got, err := Render(0, "", Options{Size: 1, Output: Tmux, ShowDelimiter: true})
+	got, err := Render(0, "", Options{Size: 1, Output: Tmux})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(got, "#[nobold,fg=colour242] |") {
+		t.Fatalf("Render() = %q", got)
+	}
+}
+
+func TestRenderCanHideDelimiter(t *testing.T) {
+	got, err := Render(0, "", Options{Size: 1, HideDelimiter: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(got, "|") {
 		t.Fatalf("Render() = %q", got)
 	}
 }

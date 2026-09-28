@@ -27,8 +27,8 @@ type Options struct {
 	Size          int
 	Output        Output
 	ShowPercent   bool
-	ShowDelimiter bool
 	BoldDelimiter bool
+	HideDelimiter bool
 	Delimiter     string
 }
 
@@ -84,7 +84,7 @@ func Render(percent float64, text string, options Options) (string, error) {
 	if options.ShowPercent {
 		result += fmt.Sprintf(" %.0f%%", percent)
 	}
-	if options.ShowDelimiter {
+	if !options.HideDelimiter {
 		result += styleDelimiter(options.Output, options.Delimiter, options.BoldDelimiter)
 	}
 	return result + resetStyle(options.Output), nil
