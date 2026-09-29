@@ -20,9 +20,19 @@ func TestRenderTmuxWithExtras(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := "#[bold][#[bg=color238]█████#[bg=lightgrey,fg=color237]12:30#[bg=color238,fg=lightgrey]#[bg=default,fg=default]] 100%#[bold,fg=colour242] |#[default]"
+	want := "#[push-default]#[bold][#[bg=color238]█████#[bg=lightgrey,fg=color237]12:30#[bg=color238,fg=lightgrey]#[bg=default,fg=default]] 100%#[bold,fg=colour242] |#[default]#[pop-default]"
 	if got != want {
 		t.Fatalf("Render() = %q, want %q", got, want)
+	}
+}
+
+func TestRenderTmuxPreservesSurroundingStyle(t *testing.T) {
+	got, err := Render(0, "", Options{Size: 1, Output: Tmux})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasPrefix(got, "#[push-default]") || !strings.HasSuffix(got, "#[default]#[pop-default]") {
+		t.Fatalf("Render() = %q", got)
 	}
 }
 

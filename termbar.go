@@ -119,14 +119,14 @@ func styleDelimiter(output Output, delimiter string, bold bool) string {
 
 func styleBold(output Output) string {
 	if output == Tmux {
-		return "#[bold]"
+		return "#[push-default]#[bold]"
 	}
 	return "\x1b[1m"
 }
 
 func resetStyle(output Output) string {
 	if output == Tmux {
-		return "#[default]"
+		return "#[default]#[pop-default]"
 	}
 	return "\x1b[0m"
 }
