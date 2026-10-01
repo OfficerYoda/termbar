@@ -57,26 +57,35 @@ func Render(percent float64, text string, options Options) (string, error) {
 		options.Delimiter = " |"
 	}
 
-	full := int(percent * float64(options.Size) / 100)
-	remainder := percent/100*float64(options.Size) - float64(full)
+	filled := percent / 100 * float64(options.Size)
+	full := int(filled)
+	remainder := filled - float64(full)
 	textWidth := utf8.RuneCountInString(text)
 	textStart := options.Size - textWidth
+	textOnBar := filled > float64(textStart)
+	if textOnBar {
+		textStart = max(0, full-textWidth)
+	}
 	var bar strings.Builder
 
-	for i := range options.Size {
+	for i := 0; i < options.Size; {
 		switch {
-		case i >= textStart:
-			if i == textStart && full > textStart {
+		case i == textStart && textWidth > 0:
+			if textOnBar {
 				bar.WriteString(styleText(options.Output, text))
-			} else if i == textStart {
+			} else {
 				bar.WriteString(text)
 			}
+			i += textWidth
 		case i < full:
 			bar.WriteString(fullBlock)
+			i++
 		case i == full && full < options.Size:
 			bar.WriteString(blocks[int(remainder*float64(len(blocks)))])
+			i++
 		default:
 			bar.WriteString(emptyBlock)
+			i++
 		}
 	}
 

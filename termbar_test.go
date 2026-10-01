@@ -15,6 +15,34 @@ func TestRenderTerminal(t *testing.T) {
 	}
 }
 
+func TestRenderMovesTextThroughBar(t *testing.T) {
+	tests := []struct {
+		percent float64
+		bar     string
+	}{
+		{75, "███████████████11:45"},
+		{80, "███████████11:45    "},
+		{82.5, "███████████11:45▌   "},
+		{100, "███████████████11:45"},
+	}
+
+	for _, test := range tests {
+		got, err := Render(test.percent, "11:45", Options{Size: 20, Output: Tmux, HideDelimiter: true})
+		if err != nil {
+			t.Fatal(err)
+		}
+		styledText := "#[bg=lightgrey,fg=color237]11:45#[bg=color238,fg=lightgrey]"
+		wantBar := strings.Replace(test.bar, "11:45", styledText, 1)
+		if test.percent == 75 {
+			wantBar = test.bar
+		}
+		want := "#[push-default]#[bold][#[bg=color238]" + wantBar + "#[bg=default,fg=default]]#[default]#[pop-default]"
+		if got != want {
+			t.Errorf("Render(%g) = %q, want %q", test.percent, got, want)
+		}
+	}
+}
+
 func TestRenderTmuxWithExtras(t *testing.T) {
 	got, err := Render(100, "12:30", Options{Size: 10, Output: Tmux, ShowPercent: true, BoldDelimiter: true})
 	if err != nil {
